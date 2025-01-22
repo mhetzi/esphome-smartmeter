@@ -92,7 +92,7 @@ sensor:
 
   - platform: template
     id: meter01_active_power_plus
-    name: "Bezugsleistung"
+    name: "Verbrauchsleistung"
     unit_of_measurement: W
     accuracy_decimals: 0
     device_class: "power"
