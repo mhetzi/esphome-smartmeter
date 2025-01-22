@@ -1,38 +1,42 @@
 esphome:
-  name: meter01
-  platform: ESP32
-  board: esp32-poe
+  name: smartmeter
+  friendly_name: "SmartMeter"
   includes:
-    - ./esphome-dlms-meter
+    - ./lib
 
-ethernet:
-  type: LAN8720
-  mdc_pin: GPIO23
-  mdio_pin: GPIO18
-  clk_mode: GPIO17_OUT
-  phy_addr: 0
-  power_pin: GPIO12
-  domain: .example.org
+esp8266:
+  board: esp01_1m
 
 # Enable logging
 logger:
-  level: INFO
-#  tx_buffer_size: 2048 # Only needed when logging large packets
+  hardware_uart: UART0_SWAP
 
-# Enable Home Assistant API if not using MQTT
-#api:
-#  password: "1234"
-#  reboot_timeout: 0s
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "<encryption_key>"
 
 ota:
-  password: "1234"
+  - platform: esphome
+    password: "<ota_password>"
+
+wifi:
+  ssid: "<wifi_ssid>"
+  password: "<wifi_password>"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Smartmeter Fallback Hotspot"
+    password: "<fallback_hotspot_password>"
+
+captive_portal:
 
 #web_server:
 #  port: 80
 
 uart:
-  tx_pin: GPIO4
-  rx_pin: GPIO36
+  tx_pin: GPIO1
+  rx_pin: GPIO3
   baud_rate: 2400
   rx_buffer_size: 1024 # Needed to receive the large packets send by the smart meter
   id: mbus
@@ -40,21 +44,23 @@ uart:
 sensor:
   - platform: template
     id: meter01_voltage_l1
-    name: meter01_voltage_l1
+    name: "Spannung L1"
     unit_of_measurement: V
     accuracy_decimals: 1
     device_class: "voltage"
     state_class: "measurement"
+
   - platform: template
     id: meter01_voltage_l2
-    name: meter01_voltage_l2
+    name: "Spannung L2"
     unit_of_measurement: V
     accuracy_decimals: 1
     device_class: "voltage"
     state_class: "measurement"
+
   - platform: template
     id: meter01_voltage_l3
-    name: meter01_voltage_l3
+    name: "Spannung L3"
     unit_of_measurement: V
     accuracy_decimals: 1
     device_class: "voltage"
@@ -62,21 +68,23 @@ sensor:
 
   - platform: template
     id: meter01_current_l1
-    name: meter01_current_l1
+    name: "Strom L1"
     unit_of_measurement: A
     accuracy_decimals: 2
     device_class: "current"
     state_class: "measurement"
+
   - platform: template
     id: meter01_current_l2
-    name: meter01_current_l2
+    name: "Strom L2"
     unit_of_measurement: A
     accuracy_decimals: 2
     device_class: "current"
     state_class: "measurement"
+
   - platform: template
     id: meter01_current_l3
-    name: meter01_current_l3
+    name: "Strom L3"
     unit_of_measurement: A
     accuracy_decimals: 2
     device_class: "current"
@@ -84,29 +92,59 @@ sensor:
 
   - platform: template
     id: meter01_active_power_plus
-    name: meter01_active_power_plus
-    unit_of_measurement: W
-    accuracy_decimals: 0
-    device_class: "power"
-    state_class: "measurement"
-  - platform: template
-    id: meter01_active_power_minus
-    name: meter01_active_power_minus
+    name: "Bezugsleistung"
     unit_of_measurement: W
     accuracy_decimals: 0
     device_class: "power"
     state_class: "measurement"
 
   - platform: template
-    id: meter01_active_energy_plus
-    name: meter01_active_energy_plus
+    id: meter01_active_power_minus
+    name: "Erzeugerleistung"
+    unit_of_measurement: W
+    accuracy_decimals: 0
+    device_class: "power"
+    state_class: "measurement"
+
+  - platform: template
+    id: meter01_power_factor
+    name: "Leistungsfaktor"
+    unit_of_measurement: "None"
+    accuracy_decimals: 2
+    device_class: "power_factor"
+    state_class: "measurement"
+
+    ## NEEDED FOR OLD HISTORY
+  - platform: template
+    id: meter01_active_energy_plus_2
+    name: "Bezugsverbrauch HISTORY"
     unit_of_measurement: Wh
     accuracy_decimals: 0
     device_class: "energy"
     state_class: "total_increasing"
+    disabled_by_default: true
+
+  - platform: template
+    id: meter01_active_power_plus_2
+    name: "Bezugsleistung HISTORY"
+    unit_of_measurement: W
+    accuracy_decimals: 0
+    device_class: "power"
+    state_class: "measurement"
+    disabled_by_default: true
+    ## END
+
+  - platform: template
+    id: meter01_active_energy_plus
+    name: "Verbrauchte Energie"
+    unit_of_measurement: Wh
+    accuracy_decimals: 0
+    device_class: "energy"
+    state_class: "total_increasing"
+
   - platform: template
     id: meter01_active_energy_minus
-    name: meter01_active_energy_minus
+    name: "Erzeugte Energie"
     unit_of_measurement: Wh
     accuracy_decimals: 0
     device_class: "energy"
@@ -114,14 +152,15 @@ sensor:
 
   - platform: template
     id: meter01_reactive_energy_plus
-    name: meter01_reactive_energy_plus
+    name: "Verbrauchte Blindenergie"
     unit_of_measurement: Wh
     accuracy_decimals: 0
     device_class: "energy"
     state_class: "total_increasing"
+
   - platform: template
     id: meter01_reactive_energy_minus
-    name: meter01_reactive_energy_minus
+    name: "Erzeugte Blindenergie"
     unit_of_measurement: Wh
     accuracy_decimals: 0
     device_class: "energy"
@@ -130,31 +169,38 @@ sensor:
 text_sensor:
   - platform: template
     id: meter01_timestamp
-    name: meter01_timestamp
+    name: "Timestamp"
+    entity_category: diagnostic
+    disabled_by_default: true
 
-mqtt:
-  broker: 192.168.1.1
-  id: mqtt_broker
+  - platform: template
+    id: meter01_meternumber
+    name: "Zaehlernummer"
+    entity_category: diagnostic
+    disabled_by_default: true
+
+# mqtt:
+#   broker: 192.168.0.11
+#   id: mqtt_broker
+#   username: esphome-smartmeter
+#   password: "<mqtt-password>"
 
 custom_component:
   - lambda: |-
-
       auto dlms_meter = new esphome::espdm::DlmsMeter(id(mbus));
-
-      uint8_t key[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+      byte key[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
       dlms_meter->set_key(key, 16); // Pass your decryption key and key length here
-
+      dlms_meter->set_key(key, 16); // Pass your decryption key and key length here
       dlms_meter->set_voltage_sensors(id(meter01_voltage_l1), id(meter01_voltage_l2), id(meter01_voltage_l3)); // Set sensors to use for voltage (optional)
-
       dlms_meter->set_current_sensors(id(meter01_current_l1), id(meter01_current_l2), id(meter01_current_l3)); // Set sensors to use for current (optional)
-
-      dlms_meter->set_active_power_sensors(id(meter01_active_power_plus), id(meter01_active_power_minus)); // Set sensors to use for active power (optional)
-
+      dlms_meter->set_active_power_sensors(id(meter01_active_power_plus), id(meter01_active_power_minus), id(meter01_power_factor)); // Set sensors to use for active power (optional)
       dlms_meter->set_active_energy_sensors(id(meter01_active_energy_plus), id(meter01_active_energy_minus)); // Set sensors to use for active energy (optional)
       dlms_meter->set_reactive_energy_sensors(id(meter01_reactive_energy_plus), id(meter01_reactive_energy_minus)); // Set sensors to use for reactive energy (optional)
-
       dlms_meter->set_timestamp_sensor(id(meter01_timestamp)); // Set sensor to use for timestamp (optional)
-
-      dlms_meter->enable_mqtt(id(mqtt_broker), "meter01/data"); // Enable grouped together MQTT report, useful to get exact time with each data for storing results in InfluxDB
-
+      dlms_meter->set_meternumber_sensor(id(meter01_meternumber)); // Set sensor to use for meterNumber (optional)
+      // dlms_meter->enable_mqtt(id(mqtt_broker), "meter01/data"); // Enable grouped together MQTT report, useful to get exact time with each data for storing results in InfluxDB
       return {dlms_meter};
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time

@@ -2,10 +2,4 @@
 # This is an example and may include too much for your use-case.
 # You can modify this file to suit your needs.
 /.esphome/
-**/.pioenvs/
-**/.piolibdeps/
-**/lib/
-**/src/
-**/platformio.ini
-/secrets.yaml
-/meter01.yaml
+smartmeter.yaml

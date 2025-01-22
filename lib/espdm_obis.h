@@ -46,6 +46,7 @@ enum CodeType
     Timestamp,
     SerialNumber,
     DeviceName,
+    MeterNumber,
     VoltageL1,
     VoltageL2,
     VoltageL3,
@@ -54,6 +55,7 @@ enum CodeType
     CurrentL3,
     ActivePowerPlus,
     ActivePowerMinus,
+    PowerFactor,
     ActiveEnergyPlus,
     ActiveEnergyMinus,
     ReactiveEnergyPlus,
@@ -88,17 +90,17 @@ static const int OBIS_F = 5;
  * Metadata
  */
 
-static uint8_t ESPDM_TIMESTAMP[]
+static byte ESPDM_TIMESTAMP[]
 {
     0x01, 0x00
 };
 
-static const uint8_t ESPDM_SERIAL_NUMBER[]
+static const byte ESPDM_SERIAL_NUMBER[]
 {
     0x60, 0x01
 };
 
-static const uint8_t ESPDM_DEVICE_NAME[]
+static const byte ESPDM_DEVICE_NAME[]
 {
     0x2A, 0x00
 };
@@ -107,17 +109,17 @@ static const uint8_t ESPDM_DEVICE_NAME[]
  * Voltage
  */
 
-static uint8_t ESPDM_VOLTAGE_L1[]
+static byte ESPDM_VOLTAGE_L1[]
 {
     0x20, 0x07
 };
 
-static const uint8_t ESPDM_VOLTAGE_L2[]
+static const byte ESPDM_VOLTAGE_L2[]
 {
     0x34, 0x07
 };
 
-static const uint8_t ESPDM_VOLTAGE_L3[]
+static const byte ESPDM_VOLTAGE_L3[]
 {
     0x48, 0x07
 };
@@ -126,17 +128,17 @@ static const uint8_t ESPDM_VOLTAGE_L3[]
  * Current
  */
 
-static const uint8_t ESPDM_CURRENT_L1[]
+static const byte ESPDM_CURRENT_L1[]
 {
     0x1F, 0x07
 };
 
-static const uint8_t ESPDM_CURRENT_L2[]
+static const byte ESPDM_CURRENT_L2[]
 {
     0x33, 0x07
 };
 
-static const uint8_t ESPDM_CURRENT_L3[]
+static const byte ESPDM_CURRENT_L3[]
 {
     0x47, 0x07
 };
@@ -145,25 +147,29 @@ static const uint8_t ESPDM_CURRENT_L3[]
  * Power
  */
 
-static const uint8_t ESPDM_ACTIVE_POWER_PLUS[]
+static const byte ESPDM_ACTIVE_POWER_PLUS[]
 {
     0x01, 0x07
 };
 
-static const uint8_t ESPDM_ACTIVE_POWER_MINUS[]
+static const byte ESPDM_ACTIVE_POWER_MINUS[]
 {
     0x02, 0x07
+};
+static const byte ESPDM_POWER_FACTOR[]
+{
+    0x0D, 0x07
 };
 
 /*
  * Active energy
  */
 
-static const uint8_t ESPDM_ACTIVE_ENERGY_PLUS[]
+static const byte ESPDM_ACTIVE_ENERGY_PLUS[]
 {
     0x01, 0x08
 };
-static const uint8_t ESPDM_ACTIVE_ENERGY_MINUS[]
+static const byte ESPDM_ACTIVE_ENERGY_MINUS[]
 {
     0x02, 0x08
 };
@@ -172,11 +178,11 @@ static const uint8_t ESPDM_ACTIVE_ENERGY_MINUS[]
  * Reactive energy
  */
 
-static const uint8_t ESPDM_REACTIVE_ENERGY_PLUS[]
+static const byte ESPDM_REACTIVE_ENERGY_PLUS[]
 {
     0x03, 0x08
 };
-static const uint8_t ESPDM_REACTIVE_ENERGY_MINUS[]
+static const byte ESPDM_REACTIVE_ENERGY_MINUS[]
 {
     0x04, 0x08
 };
