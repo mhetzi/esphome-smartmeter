@@ -27,8 +27,6 @@ namespace esphome
                 void set_timestamp_sensor(text_sensor::TextSensor *timestamp);
                 void set_meternumber_sensor(text_sensor::TextSensor *meternumber);
 
-                // void enable_mqtt(mqtt::MQTTClientComponent *mqtt_client, const char *topic);
-
                 void set_key(byte key[], size_t keyLength);
 
             private:
@@ -68,8 +66,6 @@ namespace esphome
                 text_sensor::TextSensor *timestamp = NULL; // Text sensor for the timestamp value
 
                 text_sensor::TextSensor *meternumber = NULL; // Text sensor for the meterNumber value
-
-                // mqtt::MQTTClientComponent *mqtt_client = NULL;
 
                 uint16_t swap_uint16(uint16_t val);
                 uint32_t swap_uint32(uint32_t val);

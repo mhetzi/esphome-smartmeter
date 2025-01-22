@@ -398,58 +398,6 @@ namespace esphome
                 receiveBufferIndex = 0;
 
                 ESP_LOGI(TAG, "Received valid data");
-
-                // if (this->mqtt_client != NULL)
-                // {
-                //     this->mqtt_client->publish_json(topic, [=](JsonObject root)
-                //                                     {
-                //         if(this->voltage_l1 != NULL)
-                //         {
-                //             root["voltage_l1"] = this->voltage_l1->state;
-                //             root["voltage_l2"] = this->voltage_l2->state;
-                //             root["voltage_l3"] = this->voltage_l3->state;
-                //         }
-
-                //         if(this->current_l1 != NULL)
-                //         {
-                //             root["current_l1"] = this->current_l1->state;
-                //             root["current_l2"] = this->current_l2->state;
-                //             root["current_l3"] = this->current_l3->state;
-                //         }
-
-                //         if(this->active_power_plus != NULL)
-                //         {
-                //             root["active_power_plus"] = this->active_power_plus->state;
-                //             root["active_power_minus"] = this->active_power_minus->state;
-                //         }
-
-                //         if(this->power_factor != NULL)
-                //         {
-                //             root["power_factor"] = this->power_factor->state;
-                //         }
-
-                //         if(this->active_energy_plus != NULL)
-                //         {
-                //             root["active_energy_plus"] = this->active_energy_plus->state;
-                //             root["active_energy_minus"] = this->active_energy_minus->state;
-                //         }
-
-                //         if(this->reactive_energy_plus != NULL)
-                //         {
-                //             root["reactive_energy_plus"] = this->reactive_energy_plus->state;
-                //             root["reactive_energy_minus"] = this->reactive_energy_minus->state;
-                //         }
-
-                //         if(this->timestamp != NULL)
-                //         {
-                //             root["timestamp"] = this->timestamp->state;
-                //         }
-
-                //         if(this->meternumber != NULL)
-                //         {
-                //             root["meternumber"] = this->meternumber->state;
-                //         } });
-                // }
             }
         }
 
@@ -516,12 +464,6 @@ namespace esphome
         {
             this->meternumber = meternumber;
         }
-
-        // void DlmsMeter::enable_mqtt(mqtt::MQTTClientComponent *mqtt_client, const char *topic)
-        // {
-        //     this->mqtt_client = mqtt_client;
-        //     this->topic = topic;
-        // }
 
         void DlmsMeter::log_packet(byte array[], size_t length)
         {

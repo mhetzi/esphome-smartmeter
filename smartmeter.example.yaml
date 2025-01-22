@@ -114,26 +114,6 @@ sensor:
     device_class: "power_factor"
     state_class: "measurement"
 
-    ## NEEDED FOR OLD HISTORY
-  - platform: template
-    id: meter01_active_energy_plus_2
-    name: "Bezugsverbrauch HISTORY"
-    unit_of_measurement: Wh
-    accuracy_decimals: 0
-    device_class: "energy"
-    state_class: "total_increasing"
-    disabled_by_default: true
-
-  - platform: template
-    id: meter01_active_power_plus_2
-    name: "Bezugsleistung HISTORY"
-    unit_of_measurement: W
-    accuracy_decimals: 0
-    device_class: "power"
-    state_class: "measurement"
-    disabled_by_default: true
-    ## END
-
   - platform: template
     id: meter01_active_energy_plus
     name: "Verbrauchte Energie"
@@ -178,12 +158,6 @@ text_sensor:
     name: "Zaehlernummer"
     entity_category: diagnostic
     disabled_by_default: true
-
-# mqtt:
-#   broker: 192.168.0.11
-#   id: mqtt_broker
-#   username: esphome-smartmeter
-#   password: "<mqtt-password>"
 
 custom_component:
   - lambda: |-
