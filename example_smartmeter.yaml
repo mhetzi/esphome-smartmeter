@@ -5,24 +5,53 @@ esphome:
 external_components:
   - source: components
 
-# ESP8266
+# ESP32-C6-DevKitC-1 ### Warning: Fails to build ################################################################################
+# esp32:
+#   board: esp32-c6-devkitc-1
+#   variant: esp32c6
+#   framework:
+#     type: esp-idf
+
+# uart:
+#   tx_pin: GPIO16
+#   rx_pin: GPIO17
+#   baud_rate: 2400
+#   rx_buffer_size: 1024
+# ESP32-C6-DevKitC-1 ############################################################################################################
+
+# logger:
+
+# ESP8266 #######################################################################################################################
 # esp8266:
 #   board: esp01_1m
 
-# ESP32-S3-DevKitC-1 N16R8
-esp32:
-  board: esp32-s3-devkitc-1
-  flash_size: 16MB
-  variant: ESP32S3
-  framework:
-    type: arduino
+# uart:
+#   tx_pin: GPIO1
+#   rx_pin: GPIO3
+#   baud_rate: 2400
+#   rx_buffer_size: 1024
 
-# Enable logging
+# logger:
+#   hardware_uart: UART0_SWAP
+# ESP8266 #######################################################################################################################
+
+# ESP32-S3-DevKitC-1 N16R8 ######################################################################################################
+esp32:
+  board: esp32-c6-devkitc-1
+  variant: esp32c6
+  framework:
+    type: esp-idf
+
+uart:
+  tx_pin: GPIO16
+  rx_pin: GPIO17
+  baud_rate: 2400
+  rx_buffer_size: 1024
+# ESP32-S3-DevKitC-1 N16R8 ######################################################################################################
+
 logger:
   hardware_uart: UART0
-  # hardware_uart: UART0_SWAP # for ESP8266
 
-# Enable Home Assistant API
 api:
   encryption:
     key: "<HA_API_KEY>"
@@ -34,22 +63,11 @@ ota:
 wifi:
   ssid: "<WIFI_SSID>"
   password: "<WIFI_PASSWORD>"
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Smartmeter Fallback Hotspot"
     password: "<FALLBACK_PASSWORD>"
 
 captive_portal:
-
-uart:
-  tx_pin: GPIO17
-  rx_pin: GPIO18
-  # tx_pin: GPIO1 # for ESP8266
-  # rx_pin: GPIO3 # for ESP8266
-  baud_rate: 2400
-  rx_buffer_size: 1024 # Needed to receive the large packets send by the smart meter
-  # id: mbus
 
 sensor:
 
