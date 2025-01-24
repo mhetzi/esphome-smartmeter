@@ -11,21 +11,21 @@ A custom component for ESPHome for reading meter data sent by the Kaifa MA309M v
 * Voltage L1
 * Voltage L2
 * Voltage L3
-* Amperage L1
-* Amperage L2
-* Amperage L3
-* Active Power Plus
-* Active Power Minus
-* Active Energy Plus
-* Active Energy Minus
-* Reactive Energy Plus
-* Reactive Energy Minus
+* Current L1
+* Current L2
+* Current L3
+* Power Consumption
+* Power Generation
+* Energy Consumption
+* Energy Generation
+* Reactive Energy Consumption
+* Reactive Energy Generation
 * Timestamp
 * Meter Number
 
 # Requirements
 
-* ESP8266
+* ESP8266 or ESP32-S3
 * RJ11 cable
 * M-Bus to UART board (e.g. https://www.mikroe.com/m-bus-slave-click)
 * RJ11 breakout board **or** soldering iron with some wires
