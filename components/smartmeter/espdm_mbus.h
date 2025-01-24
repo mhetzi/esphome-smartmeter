@@ -1,3 +1,5 @@
+#pragma once
+
 /*
  * Data structure
  */
@@ -10,5 +12,5 @@ static const int MBUS_MAX_FRAME_LENGTH = 250; // Maximum size of frame
 
 static const int MBUS_START1_OFFSET = 0; // Offset of first start byte
 static const int MBUS_LENGTH1_OFFSET = 1; // Offset of first length byte
-static const int MBUS_LENGTH2_OFFSET = 2; // Offset of (duplicated) second length byte
-static const int MBUS_START2_OFFSET = 3; // Offset of (duplicated) second start byte
+static const int MBUS_LENGTH2_OFFSET = 2; // Offset of (duplicated) second length char
+static const int MBUS_START2_OFFSET = 3; // Offset of (duplicated) second start char

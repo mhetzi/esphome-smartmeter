@@ -8,10 +8,8 @@
 
 namespace esphome
 {
-    namespace espdm
+    namespace smartmeter
     {
-        DlmsMeter::DlmsMeter(uart::UARTComponent *parent) : uart::UARTDevice(parent) {}
-
         void DlmsMeter::setup()
         {
             ESP_LOGI(TAG, "DLMS smart meter component v%s started", ESPDM_VERSION);
@@ -21,7 +19,7 @@ namespace esphome
         {
             unsigned long currentTime = millis();
 
-            while (available()) // Read while data is available
+            while (this->available()) // Read while data is available
             {
                 if (receiveBufferIndex >= receiveBufferSize)
                 {
@@ -29,11 +27,11 @@ namespace esphome
                     receiveBufferIndex = 0;
                 }
 
-                receiveBuffer[receiveBufferIndex] = read();
+                receiveBuffer[receiveBufferIndex] = this->read();
                 receiveBufferIndex++;
 
                 lastRead = currentTime;
-                
+
                 delay(10);
             }
 
@@ -42,7 +40,7 @@ namespace esphome
                 ESP_LOGV(TAG, "receiveBufferIndex: %d", receiveBufferIndex);
                 if (receiveBufferIndex < 256)
                 {
-                    ESP_LOGE(TAG, "Received packet with invalid size");
+                    ESP_LOGE(TAG, "Received packet with invalid size %d", receiveBufferIndex);
                     return abort();
                 }
 
@@ -59,7 +57,7 @@ namespace esphome
 
                 if (receiveBufferIndex <= payloadLength)
                 {
-                    ESP_LOGV(TAG, "receiveBufferIndex: %d, payloadLength: %d", receiveBufferIndex, payloadLength);
+                    ESP_LOGD(TAG, "receiveBufferIndex: %d, payloadLength: %d", receiveBufferIndex, payloadLength);
                     ESP_LOGE(TAG, "Payload length is too big for received data");
                     return abort();
                 }
@@ -74,28 +72,28 @@ namespace esphome
                             return abort();
                         }
                 */
-                // uint16_t payloadLength1 = 227; // TODO: Read payload length 1 from data
+
                 uint16_t payloadLength1 = 228; // TODO: Read payload length 1 from data
 
                 uint16_t payloadLength2 = payloadLength - payloadLength1;
 
                 if (payloadLength2 >= receiveBufferIndex - DLMS_HEADER2_OFFSET - DLMS_HEADER2_LENGTH)
                 {
-                    ESP_LOGV(TAG, "receiveBufferIndex: %d, payloadLength2: %d", receiveBufferIndex, payloadLength2);
+                    ESP_LOGD(TAG, "receiveBufferIndex: %d, payloadLength2: %d", receiveBufferIndex, payloadLength2);
                     ESP_LOGE(TAG, "Payload length 2 is too big");
                     return abort();
                 }
 
-                byte iv[12]; // Reserve space for the IV, always 12 bytes
+                unsigned char iv[12]; // Reserve space for the IV, always 12 chars
 
                 memcpy(&iv[0], &receiveBuffer[DLMS_SYST_OFFSET], DLMS_SYST_LENGTH); // Copy system title to IV
                 memcpy(&iv[8], &receiveBuffer[DLMS_IC_OFFSET], DLMS_IC_LENGTH);     // Copy invocation counter to IV
 
-                byte ciphertext[payloadLength];
+                unsigned char ciphertext[payloadLength];
                 memcpy(&ciphertext[0], &receiveBuffer[DLMS_HEADER1_OFFSET + DLMS_HEADER1_LENGTH], payloadLength1);
                 memcpy(&ciphertext[payloadLength1], &receiveBuffer[DLMS_HEADER2_OFFSET + DLMS_HEADER2_LENGTH], payloadLength2);
 
-                byte plaintext[payloadLength];
+                unsigned char plaintext[payloadLength];
 #if defined(ESP8266)
                 memcpy(plaintext, ciphertext, payloadLength);
                 br_gcm_context gcmCtx;
@@ -134,7 +132,7 @@ namespace esphome
                         return abort();
                     }
 
-                    byte obisCodeLength = plaintext[currentPosition + OBIS_LENGTH_OFFSET];
+                    char obisCodeLength = plaintext[currentPosition + OBIS_LENGTH_OFFSET];
 
                     if (obisCodeLength != 0x06 && obisCodeLength != 0x0C)
                     {
@@ -142,7 +140,7 @@ namespace esphome
                         return abort();
                     }
 
-                    byte obisCode[obisCodeLength];
+                    char obisCode[obisCodeLength];
                     memcpy(&obisCode[0], &plaintext[currentPosition + OBIS_CODE_OFFSET], obisCodeLength); // Copy OBIS code to array
 
                     bool timestampFound = false;
@@ -161,10 +159,10 @@ namespace esphome
                         currentPosition += obisCodeLength + 2; // Advance past code and position
                     }
 
-                    byte dataType = plaintext[currentPosition];
+                    char dataType = plaintext[currentPosition];
                     currentPosition++; // Advance past data type
 
-                    byte dataLength = 0x00;
+                    char dataLength = 0x00;
 
                     CodeType codeType = CodeType::Unknown;
 
@@ -284,22 +282,23 @@ namespace esphome
 
                         floatValue = uint32Value; // Ignore decimal digits for now
 
-                        if (codeType == CodeType::ActivePowerPlus && this->active_power_plus != NULL && this->active_power_plus->state != floatValue)
-                            this->active_power_plus->publish_state(floatValue);
-                        else if (codeType == CodeType::ActivePowerMinus && this->active_power_minus != NULL && this->active_power_minus->state != floatValue)
-                            this->active_power_minus->publish_state(floatValue);
+                        if (codeType == CodeType::ActivePowerPlus && this->power_consumption != NULL && this->power_consumption->state != floatValue)
+                            this->power_consumption->publish_state(floatValue);
+                        else if (codeType == CodeType::ActivePowerMinus && this->power_production != NULL && this->power_production->state != floatValue)
+                            this->power_production->publish_state(floatValue);
 
-                        else if (codeType == CodeType::ActiveEnergyPlus && this->active_energy_plus != NULL && this->active_energy_plus->state != floatValue)
-                            this->active_energy_plus->publish_state(floatValue);
-                        else if (codeType == CodeType::ActiveEnergyMinus && this->active_energy_minus != NULL && this->active_energy_minus->state != floatValue)
-                            this->active_energy_minus->publish_state(floatValue);
+                        else if (codeType == CodeType::ActiveEnergyPlus && this->energy_consumption != NULL && this->energy_consumption->state != floatValue)
+                            this->energy_consumption->publish_state(floatValue);
+                        else if (codeType == CodeType::ActiveEnergyMinus && this->energy_production != NULL && this->energy_production->state != floatValue)
+                            this->energy_production->publish_state(floatValue);
 
-                        else if (codeType == CodeType::ReactiveEnergyPlus && this->reactive_energy_plus != NULL && this->reactive_energy_plus->state != floatValue)
-                            this->reactive_energy_plus->publish_state(floatValue);
-                        else if (codeType == CodeType::ReactiveEnergyMinus && this->reactive_energy_minus != NULL && this->reactive_energy_minus->state != floatValue)
-                            this->reactive_energy_minus->publish_state(floatValue);
+                        else if (codeType == CodeType::ReactiveEnergyPlus && this->reactive_energy_consumption != NULL && this->reactive_energy_consumption->state != floatValue)
+                            this->reactive_energy_consumption->publish_state(floatValue);
+                        else if (codeType == CodeType::ReactiveEnergyMinus && this->reactive_energy_production != NULL && this->reactive_energy_production->state != floatValue)
+                            this->reactive_energy_production->publish_state(floatValue);
 
                         break;
+
                     case DataType::LongUnsigned:
                         dataLength = 2;
 
@@ -331,13 +330,14 @@ namespace esphome
                             this->power_factor->publish_state(floatValue / 1000.0);
 
                         break;
+
                     case DataType::OctetString:
                         dataLength = plaintext[currentPosition];
                         currentPosition++; // Advance past string length
 
                         if (codeType == CodeType::Timestamp) // Handle timestamp generation
                         {
-                            char timestamp[21]; // 0000-00-00T00:00:00Z
+                            char timestamp[20]; // 0000-00-00 00:00:00
 
                             uint16_t year;
                             uint8_t month;
@@ -357,7 +357,7 @@ namespace esphome
                             memcpy(&minute, &plaintext[currentPosition + 6], 1);
                             memcpy(&second, &plaintext[currentPosition + 7], 1);
 
-                            sprintf(timestamp, "%04u-%02u-%02uT%02u:%02u:%02uZ", year, month, day, hour, minute, second);
+                            sprintf(timestamp, "%04u-%02u-%02u %02u:%02u:%02u", year, month, day, hour, minute, second);
 
                             this->timestamp->publish_state(timestamp);
                         }
@@ -417,62 +417,24 @@ namespace esphome
             return (val << 16) | (val >> 16);
         }
 
-        void DlmsMeter::set_key(byte key[], size_t keyLength)
+        void DlmsMeter::set_key(const std::string &key)
         {
-            memcpy(&this->key[0], &key[0], keyLength);
-            this->keyLength = keyLength;
+            for (unsigned int i = 0; i < key.length() && i < sizeof(key)*2; i += 2)
+            {
+                std::string byteString = key.substr(i, 2);
+                this->key[keyLength] = (unsigned char)strtol(byteString.c_str(), NULL, 16);
+                keyLength++;
+            }
         }
 
-        void DlmsMeter::set_voltage_sensors(sensor::Sensor *voltage_l1, sensor::Sensor *voltage_l2, sensor::Sensor *voltage_l3)
-        {
-            this->voltage_l1 = voltage_l1;
-            this->voltage_l2 = voltage_l2;
-            this->voltage_l3 = voltage_l3;
-        }
-        void DlmsMeter::set_current_sensors(sensor::Sensor *current_l1, sensor::Sensor *current_l2, sensor::Sensor *current_l3)
-        {
-            this->current_l1 = current_l1;
-            this->current_l2 = current_l2;
-            this->current_l3 = current_l3;
-        }
-
-        void DlmsMeter::set_active_power_sensors(sensor::Sensor *active_power_plus, sensor::Sensor *active_power_minus, sensor::Sensor *power_factor)
-        {
-            this->active_power_plus = active_power_plus;
-            this->active_power_minus = active_power_minus;
-            this->power_factor = power_factor;
-        }
-
-        void DlmsMeter::set_active_energy_sensors(sensor::Sensor *active_energy_plus, sensor::Sensor *active_energy_minus)
-        {
-            this->active_energy_plus = active_energy_plus;
-            this->active_energy_minus = active_energy_minus;
-        }
-
-        void DlmsMeter::set_reactive_energy_sensors(sensor::Sensor *reactive_energy_plus, sensor::Sensor *reactive_energy_minus)
-        {
-            this->reactive_energy_plus = reactive_energy_plus;
-            this->reactive_energy_minus = reactive_energy_minus;
-        }
-
-        void DlmsMeter::set_timestamp_sensor(text_sensor::TextSensor *timestamp)
-        {
-            this->timestamp = timestamp;
-        }
-
-        void DlmsMeter::set_meternumber_sensor(text_sensor::TextSensor *meternumber)
-        {
-            this->meternumber = meternumber;
-        }
-
-        void DlmsMeter::log_packet(byte array[], size_t length)
+        void DlmsMeter::log_packet(unsigned char array[], size_t length)
         {
             char buffer[(length * 3)];
 
             for (unsigned int i = 0; i < length; i++)
             {
-                byte nib1 = (array[i] >> 4) & 0x0F;
-                byte nib2 = (array[i] >> 0) & 0x0F;
+                char nib1 = (array[i] >> 4) & 0x0F;
+                char nib2 = (array[i] >> 0) & 0x0F;
                 buffer[i * 3] = nib1 < 0xA ? '0' + nib1 : 'A' + nib1 - 0xA;
                 buffer[i * 3 + 1] = nib2 < 0xA ? '0' + nib2 : 'A' + nib2 - 0xA;
                 buffer[i * 3 + 2] = ' ';

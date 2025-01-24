@@ -1,3 +1,5 @@
+#pragma once
+
 /*
  * Data types as per specification
  */
@@ -90,17 +92,17 @@ static const int OBIS_F = 5;
  * Metadata
  */
 
-static byte ESPDM_TIMESTAMP[]
+static char ESPDM_TIMESTAMP[]
 {
     0x01, 0x00
 };
 
-static const byte ESPDM_SERIAL_NUMBER[]
+static const char ESPDM_SERIAL_NUMBER[]
 {
     0x60, 0x01
 };
 
-static const byte ESPDM_DEVICE_NAME[]
+static const char ESPDM_DEVICE_NAME[]
 {
     0x2A, 0x00
 };
@@ -109,17 +111,17 @@ static const byte ESPDM_DEVICE_NAME[]
  * Voltage
  */
 
-static byte ESPDM_VOLTAGE_L1[]
+static char ESPDM_VOLTAGE_L1[]
 {
     0x20, 0x07
 };
 
-static const byte ESPDM_VOLTAGE_L2[]
+static const char ESPDM_VOLTAGE_L2[]
 {
     0x34, 0x07
 };
 
-static const byte ESPDM_VOLTAGE_L3[]
+static const char ESPDM_VOLTAGE_L3[]
 {
     0x48, 0x07
 };
@@ -128,17 +130,17 @@ static const byte ESPDM_VOLTAGE_L3[]
  * Current
  */
 
-static const byte ESPDM_CURRENT_L1[]
+static const char ESPDM_CURRENT_L1[]
 {
     0x1F, 0x07
 };
 
-static const byte ESPDM_CURRENT_L2[]
+static const char ESPDM_CURRENT_L2[]
 {
     0x33, 0x07
 };
 
-static const byte ESPDM_CURRENT_L3[]
+static const char ESPDM_CURRENT_L3[]
 {
     0x47, 0x07
 };
@@ -147,16 +149,16 @@ static const byte ESPDM_CURRENT_L3[]
  * Power
  */
 
-static const byte ESPDM_ACTIVE_POWER_PLUS[]
+static const char ESPDM_ACTIVE_POWER_PLUS[]
 {
     0x01, 0x07
 };
 
-static const byte ESPDM_ACTIVE_POWER_MINUS[]
+static const char ESPDM_ACTIVE_POWER_MINUS[]
 {
     0x02, 0x07
 };
-static const byte ESPDM_POWER_FACTOR[]
+static const char ESPDM_POWER_FACTOR[]
 {
     0x0D, 0x07
 };
@@ -165,11 +167,11 @@ static const byte ESPDM_POWER_FACTOR[]
  * Active energy
  */
 
-static const byte ESPDM_ACTIVE_ENERGY_PLUS[]
+static const char ESPDM_ACTIVE_ENERGY_PLUS[]
 {
     0x01, 0x08
 };
-static const byte ESPDM_ACTIVE_ENERGY_MINUS[]
+static const char ESPDM_ACTIVE_ENERGY_MINUS[]
 {
     0x02, 0x08
 };
@@ -178,11 +180,11 @@ static const byte ESPDM_ACTIVE_ENERGY_MINUS[]
  * Reactive energy
  */
 
-static const byte ESPDM_REACTIVE_ENERGY_PLUS[]
+static const char ESPDM_REACTIVE_ENERGY_PLUS[]
 {
     0x03, 0x08
 };
-static const byte ESPDM_REACTIVE_ENERGY_MINUS[]
+static const char ESPDM_REACTIVE_ENERGY_MINUS[]
 {
     0x04, 0x08
 };

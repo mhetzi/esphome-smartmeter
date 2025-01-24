@@ -1,0 +1,93 @@
+esphome:
+  name: smartmeter_new
+  friendly_name: "SmartMeter NEW"
+
+external_components:
+  - source: components
+
+# ESP8266
+# esp8266:
+#   board: esp01_1m
+
+# ESP32-S3-DevKitC-1 N16R8
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 16MB
+  variant: ESP32S3
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  hardware_uart: UART0
+  # hardware_uart: UART0_SWAP # for ESP8266
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "<HA_API_KEY>"
+
+ota:
+  - platform: esphome
+    password: "<OTA_KEY>"
+
+wifi:
+  ssid: "<WIFI_SSID>"
+  password: "<WIFI_PASSWORD>"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Smartmeter Fallback Hotspot"
+    password: "<FALLBACK_PASSWORD>"
+
+captive_portal:
+
+uart:
+  tx_pin: GPIO17
+  rx_pin: GPIO18
+  # tx_pin: GPIO1 # for ESP8266
+  # rx_pin: GPIO3 # for ESP8266
+  baud_rate: 2400
+  rx_buffer_size: 1024 # Needed to receive the large packets send by the smart meter
+  # id: mbus
+
+sensor:
+
+text_sensor:
+
+smartmeter:
+  key: "<SMARTMETER_KEY>"
+  voltage_l1:
+    name: "Spannung L1"
+  voltage_l2:
+    name: "Spannung L2"
+  voltage_l3:
+    name: "Spannung L3"
+  current_l1:
+    name: "Strom L1"
+  current_l2:
+    name: "Strom L2"
+  current_l3:
+    name: "Strom L3"
+  power_consumption:
+    name: "Verbrauchsleistung"
+  power_production:
+    name: "Erzeugerleistung"
+  power_factor:
+    name: "Leistungsfaktor"
+  energy_consumption:
+    name: "Energieverbrauch"
+  energy_production:
+    name: "Energieerzeugung"
+  reactive_energy_consumption:
+    name: "Blinkenergieverbrauch"
+  reactive_energy_production:
+    name: "Blindenergieerzeugung"
+  timestamp:
+    name: "Zeit"
+  meter_number:
+    name: "Zählernummer"
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
