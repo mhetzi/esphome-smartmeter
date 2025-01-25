@@ -442,7 +442,7 @@ namespace esphome
 
             buffer[(length * 3) - 1] = '\0';
 
-            ESP_LOGV(TAG, buffer);
+            ESP_LOGI(TAG, buffer);
         }
     }
 }
