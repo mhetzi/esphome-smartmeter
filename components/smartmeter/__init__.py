@@ -77,7 +77,7 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional("power_factor"): sensor.sensor_schema(
-            accuracy_decimals=0,
+            accuracy_decimals=2,
             device_class=DEVICE_CLASS_POWER_FACTOR,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
