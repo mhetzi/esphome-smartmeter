@@ -20,6 +20,7 @@ namespace esphome
             public:
                 void setup() override;
                 void loop() override;
+                void dump_config() override;
 
                 void set_voltage_l1_sensor(sensor::Sensor *voltage_l1) { this->voltage_l1 = voltage_l1; }
                 void set_voltage_l2_sensor(sensor::Sensor *voltage_l2) { this->voltage_l2 = voltage_l2; }

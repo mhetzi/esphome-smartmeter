@@ -19,7 +19,7 @@ namespace esphome
         {
             unsigned long currentTime = millis();
 
-            while (this->available()) // Read while data is available
+            while (available()) // Read while data is available
             {
                 if (receiveBufferIndex >= receiveBufferSize)
                 {
@@ -27,7 +27,7 @@ namespace esphome
                     receiveBufferIndex = 0;
                 }
 
-                receiveBuffer[receiveBufferIndex] = this->read();
+                receiveBuffer[receiveBufferIndex] = read();
                 receiveBufferIndex++;
 
                 lastRead = currentTime;
@@ -419,7 +419,7 @@ namespace esphome
 
         void DlmsMeter::set_key(const std::string &key)
         {
-            for (unsigned int i = 0; i < key.length() && i < sizeof(key)*2; i += 2)
+            for (unsigned int i = 0; i < key.length() && i < sizeof(key) * 2; i += 2)
             {
                 std::string byteString = key.substr(i, 2);
                 this->key[keyLength] = (unsigned char)strtol(byteString.c_str(), NULL, 16);
@@ -443,6 +443,11 @@ namespace esphome
             buffer[(length * 3) - 1] = '\0';
 
             ESP_LOGI(TAG, buffer);
+        }
+
+        void DlmsMeter::dump_config()
+        {
+            ESP_LOGCONFIG(TAG, "smartmeter config dump not implemented");
         }
     }
 }
