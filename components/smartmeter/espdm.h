@@ -4,8 +4,10 @@
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 
-#if defined(ESP32)
+#if defined(ESP32) || defined(USE_ESP_IDF)
+#define MBEDTLS_CONFIG_FILE "mbedtls/esp_config.h"
 #include "mbedtls/gcm.h"
+#include "mbedtls/aes.h"
 #endif
 
 static const char* ESPDM_VERSION = "0.1.0";
@@ -50,7 +52,7 @@ namespace esphome
                 unsigned char key[16]; // Stores the decryption key
                 size_t keyLength; // Stores the decryption key length (usually 16 bytes)
 
-#if defined(ESP32)
+#if defined(ESP32) || defined(USE_ESP_IDF)
                 mbedtls_gcm_context aes; // AES context used for decryption
 #endif
 

@@ -103,7 +103,7 @@ namespace esphome
                 br_gcm_reset(&gcmCtx, iv, sizeof(iv));
                 br_gcm_flip(&gcmCtx);
                 br_gcm_run(&gcmCtx, 0, plaintext, payloadLength);
-#elif defined(ESP32)
+#elif defined(ESP32) || defined(USE_ESP_IDF)
                 mbedtls_gcm_init(&aes);
                 mbedtls_gcm_setkey(&aes, MBEDTLS_CIPHER_ID_AES, key, keyLength * 8);
                 mbedtls_gcm_auth_decrypt(&aes, payloadLength, iv, sizeof(iv), NULL, 0, NULL, 0, ciphertext, plaintext);
